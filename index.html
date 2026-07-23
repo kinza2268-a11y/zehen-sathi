@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ذہین ساتھی</title>
+
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+</head>
+<body style="font-family:Arial;text-align:center;padding:50px;background:#f5f5f5;">
+
+<h1>🤖 ذہین ساتھی</h1>
+<p>AI اسسٹنٹ میں خوش آمدید!</p>
+
+<button id="signin">Pi سے Sign In کریں</button>
+
+<p id="status"></p>
+
+<script>
+async function login() {
+  try {
+    document.getElementById("status").innerText = "Connecting...";
+
+    Pi.init({
+  version: "2.0",
+  sandbox: true
+});
+
+    const auth = await Pi.authenticate(["username"]);
+
+    document.getElementById("status").innerText =
+      "Welcome " + auth.user.username;
+
+    // TODO:
+    // auth.accessToken کو اپنے backend پر POST کریں۔
+    // Backend کو https://api.minepi.com/v2/me
+    // پر Authorization: Bearer <accessToken>
+    // کے ساتھ verify کرنا ہوگا۔
+  } catch (e) {
+    document.getElementById("status").innerText = "Login failed";
+    console.error(e);
+  }
+}
+
+window.addEventListener("load", login);
+
+document
+  .getElementById("signin")
+  .addEventListener("click", login);
+</script>
+
+</body>
+</html>
