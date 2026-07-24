@@ -7,6 +7,7 @@
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
 </head>
+
 <body style="font-family:Arial;text-align:center;padding:50px;background:#f5f5f5;">
 
 <h1>🤖 ذہین ساتھی</h1>
@@ -17,32 +18,49 @@
 <p id="status"></p>
 
 <script>
-async function login() {
-  try {
-    document.getElementById("status").innerText = "Connecting...";
-
-    Pi.init({
+Pi.init({
   version: "2.0",
   sandbox: true
 });
 
-    const auth = await Pi.authenticate(["username"]);
+async function login() {
+  try {
+    document.getElementById("status").innerText = "Connecting...";
 
-    document.getElementById("status").innerText =
-      "Welcome " + auth.user.username;
+    const auth = await Pi.authenticate(
+      ["username"],
+      function(incompletePayment) {
+        console.log("Incomplete Payment:", incompletePayment);
+      }
+    );
 
-    // TODO:
-    // auth.accessToken کو اپنے backend پر POST کریں۔
-    // Backend کو https://api.minepi.com/v2/me
-    // پر Authorization: Bearer <accessToken>
-    // کے ساتھ verify کرنا ہوگا۔
+    // Backend پر Access Token Verify کریں
+    const response = await fetch("/api/auth", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        accessToken: auth.accessToken
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      document.getElementById("status").innerHTML =
+        "✅ Welcome <b>" + data.user.username + "</b>";
+    } else {
+      document.getElementById("status").innerText =
+        "Login verification failed";
+    }
+
   } catch (e) {
-    document.getElementById("status").innerText = "Login failed";
     console.error(e);
+    document.getElementById("status").innerText =
+      "❌ Login Failed";
   }
 }
-
-
 
 document
   .getElementById("signin")
