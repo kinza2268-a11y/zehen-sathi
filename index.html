@@ -24,11 +24,20 @@
   <div id="chat" class="chat-box"></div>
 
   <div class="input-area">
+
     <input
       type="text"
       id="userInput"
       placeholder="اپنا سوال لکھیں...">
-    <button onclick="sendMessage()">بھیجیں</button>
+
+    <button onclick="sendMessage()">
+      📤 بھیجیں
+    </button>
+
+    <button onclick="clearChat()">
+      🗑️ صاف کریں
+    </button>
+
   </div>
 
 </div>
@@ -43,53 +52,47 @@ async function login() {
 
   try {
 
-    document.getElementById("status").innerHTML="Connecting...";
+    document.getElementById("status").innerHTML = "Connecting...";
 
     const auth = await Pi.authenticate(
       ["username"],
       function(payment){}
     );
 
-    const response = await fetch("/api/auth",{
+    const response = await fetch("/api/auth", {
 
-      method:"POST",
+      method: "POST",
 
-      headers:{
-        "Content-Type":"application/json"
+      headers: {
+        "Content-Type": "application/json"
       },
 
-      body:JSON.stringify({
-
-        accessToken:auth.accessToken
-
+      body: JSON.stringify({
+        accessToken: auth.accessToken
       })
 
     });
 
-    const data=await response.json();
+    const data = await response.json();
 
-    if(data.success){
+    if (data.success) {
 
-      document.getElementById("status").innerHTML=
-      "✅ Welcome <b>"+data.user.username+"</b>";
+      document.getElementById("status").innerHTML =
+      "✅ Welcome <b>" + data.user.username + "</b>";
 
-    }
+    } else {
 
-    else{
-
-      document.getElementById("status").innerHTML=
-      "Login Verification Failed";
+      document.getElementById("status").innerHTML =
+      "❌ Login Verification Failed";
 
     }
 
-  }
-
-  catch(e){
+  } catch (e) {
 
     console.log(e);
 
-    document.getElementById("status").innerHTML=
-    "Login Failed";
+    document.getElementById("status").innerHTML =
+    "❌ Login Failed";
 
   }
 
@@ -97,7 +100,7 @@ async function login() {
 
 document
 .getElementById("signin")
-.addEventListener("click",login);
+.addEventListener("click", login);
 
 </script>
 
