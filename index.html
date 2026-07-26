@@ -1,21 +1,37 @@
+
 <!DOCTYPE html>
 <html lang="ur">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ذہین ساتھی</title>
+  <title>ZEHEN SATHI AI</title>
 
   <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 
-<body style="font-family:Arial;text-align:center;padding:50px;background:#f5f5f5;">
+<body>
 
-<h1>🤖 ذہین ساتھی</h1>
-<p>AI اسسٹنٹ میں خوش آمدید!</p>
+<div class="container">
 
-<button id="signin">Pi سے Sign In کریں</button>
+  <h1>🤖 ZEHEN SATHI AI</h1>
+  <p>AI اسسٹنٹ میں خوش آمدید</p>
 
-<p id="status"></p>
+  <button id="signin">Pi سے Sign In کریں</button>
+
+  <p id="status"></p>
+
+  <div id="chat" class="chat-box"></div>
+
+  <div class="input-area">
+    <input
+      type="text"
+      id="userInput"
+      placeholder="اپنا سوال لکھیں...">
+    <button onclick="sendMessage()">بھیجیں</button>
+  </div>
+
+</div>
 
 <script>
 Pi.init({
@@ -24,48 +40,68 @@ Pi.init({
 });
 
 async function login() {
+
   try {
-    document.getElementById("status").innerText = "Connecting...";
+
+    document.getElementById("status").innerHTML="Connecting...";
 
     const auth = await Pi.authenticate(
       ["username"],
-      function(incompletePayment) {
-        console.log("Incomplete Payment:", incompletePayment);
-      }
+      function(payment){}
     );
 
-    // Backend پر Access Token Verify کریں
-    const response = await fetch("/api/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
+    const response = await fetch("/api/auth",{
+
+      method:"POST",
+
+      headers:{
+        "Content-Type":"application/json"
       },
-      body: JSON.stringify({
-        accessToken: auth.accessToken
+
+      body:JSON.stringify({
+
+        accessToken:auth.accessToken
+
       })
+
     });
 
-    const data = await response.json();
+    const data=await response.json();
 
-    if (data.success) {
-      document.getElementById("status").innerHTML =
-        "✅ Welcome <b>" + data.user.username + "</b>";
-    } else {
-      document.getElementById("status").innerText =
-        "Login verification failed";
+    if(data.success){
+
+      document.getElementById("status").innerHTML=
+      "✅ Welcome <b>"+data.user.username+"</b>";
+
     }
 
-  } catch (e) {
-    console.error(e);
-    document.getElementById("status").innerText =
-      "❌ Login Failed";
+    else{
+
+      document.getElementById("status").innerHTML=
+      "Login Verification Failed";
+
+    }
+
   }
+
+  catch(e){
+
+    console.log(e);
+
+    document.getElementById("status").innerHTML=
+    "Login Failed";
+
+  }
+
 }
 
 document
-  .getElementById("signin")
-  .addEventListener("click", login);
+.getElementById("signin")
+.addEventListener("click",login);
+
 </script>
+
+<script src="script.js"></script>
 
 </body>
 </html>
