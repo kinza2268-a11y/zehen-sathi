@@ -1,3 +1,4 @@
+
 const chat = document.getElementById("chat");
 const input = document.getElementById("userInput");
 
@@ -11,12 +12,16 @@ function addMessage(text, sender) {
 
 async function sendMessage() {
   const message = input.value.trim();
-  if (!message) return;
+
+  if (!message) {
+    alert("براہ کرم پہلے کوئی سوال لکھیں۔");
+    return;
+  }
 
   addMessage(message, "user");
   input.value = "";
 
-  addMessage("ذہین ساتھی سوچ رہا ہے...", "bot");
+  addMessage("🤖 ZEHEN SATHI AI سوچ رہی ہے...", "bot");
 
   try {
     const response = await fetch("/api/chat", {
@@ -32,10 +37,26 @@ async function sendMessage() {
     const data = await response.json();
 
     chat.lastChild.remove();
-    addMessage(data.reply || "کوئی جواب نہیں ملا۔", "bot");
+
+    addMessage(
+      data.reply || "معذرت، ابھی جواب دستیاب نہیں۔",
+      "bot"
+    );
 
   } catch (e) {
+
     chat.lastChild.remove();
-    addMessage("سرور سے رابطہ نہیں ہو سکا۔", "bot");
+
+    addMessage(
+      "❌ سرور سے رابطہ نہیں ہو سکا۔",
+      "bot"
+    );
   }
 }
+
+// Enter دبانے سے بھی میسج Send ہوگا
+input.addEventListener("keydown", function(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+});
