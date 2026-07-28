@@ -15,11 +15,18 @@
 <div class="container">
 
   <h1>🤖 ZEHEN SATHI AI</h1>
-  <p>AI اسسٹنٹ میں خوش آمدید</p>
+
+  <p class="subtitle">
+    Pi Network کے لیے ذہین AI اسسٹنٹ
+  </p>
 
   <button id="signin">Pi سے Sign In کریں</button>
 
   <p id="status"></p>
+
+  <hr>
+
+  <h3>💬 AI Chat</h3>
 
   <div id="chat" class="chat-box"></div>
 
@@ -60,17 +67,13 @@ async function login() {
     );
 
     const response = await fetch("/api/auth", {
-
       method: "POST",
-
       headers: {
         "Content-Type": "application/json"
       },
-
       body: JSON.stringify({
         accessToken: auth.accessToken
       })
-
     });
 
     const data = await response.json();
