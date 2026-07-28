@@ -40,7 +40,21 @@ async function sendMessage() {
 
   input.value = "";
 
-  addMessage("🤖 ZEHEN SATHI AI سوچ رہی ہے...", "bot");
+  const typing = document.createElement("div");
+
+typing.className = "message bot";
+
+typing.innerHTML = `
+🤖 ZEHEN SATHI AI
+<div class="typing">
+  <span></span>
+  <span></span>
+  <span></span>
+</div>
+`;
+
+chat.appendChild(typing);
+chat.scrollTop = chat.scrollHeight;
 
   try {
 
