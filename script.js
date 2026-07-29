@@ -1,4 +1,3 @@
-
 const chat = document.getElementById("chat");
 const input = document.getElementById("userInput");
 
@@ -16,12 +15,29 @@ function saveChat() {
   localStorage.setItem("zehenSathiHistory", chat.innerHTML);
 }
 
+// میسج دکھانے کا فنکشن
 function addMessage(text, sender) {
-  const div = document.createElement("div");
-  div.className = "message " + sender;
-  div.textContent = text;
-  chat.appendChild(div);
 
+  const row = document.createElement("div");
+  row.className = "chat-row " + sender;
+
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.innerHTML = sender === "user" ? "🧑" : "🤖";
+
+  const msg = document.createElement("div");
+  msg.className = "message " + sender;
+  msg.textContent = text;
+
+  if (sender === "user") {
+    row.appendChild(msg);
+    row.appendChild(avatar);
+  } else {
+    row.appendChild(avatar);
+    row.appendChild(msg);
+  }
+
+  chat.appendChild(row);
   chat.scrollTop = chat.scrollHeight;
 
   saveChat();
@@ -40,41 +56,39 @@ async function sendMessage() {
 
   input.value = "";
 
-  const typing = document.createElement("div");
+  // Typing Animation
+  const row = document.createElement("div");
+  row.className = "chat-row bot";
 
-typing.className = "message bot";
+  row.innerHTML = `
+    <div class="avatar">🤖</div>
+    <div class="message bot">
+      <div class="typing">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  `;
 
-typing.innerHTML = `
-🤖 ZEHEN SATHI AI
-<div class="typing">
-  <span></span>
-  <span></span>
-  <span></span>
-</div>
-`;
-
-chat.appendChild(typing);
-chat.scrollTop = chat.scrollHeight;
+  chat.appendChild(row);
+  chat.scrollTop = chat.scrollHeight;
 
   try {
 
     const response = await fetch("/api/chat", {
-
       method: "POST",
-
       headers: {
         "Content-Type": "application/json"
       },
-
       body: JSON.stringify({
         message: message
       })
-
     });
 
     const data = await response.json();
 
-    chat.lastChild.remove();
+    row.remove();
 
     addMessage(
       data.reply || "معذرت، ابھی جواب دستیاب نہیں۔",
@@ -83,7 +97,7 @@ chat.scrollTop = chat.scrollHeight;
 
   } catch (e) {
 
-    chat.lastChild.remove();
+    row.remove();
 
     addMessage(
       "❌ سرور سے رابطہ نہیں ہو سکا۔",
@@ -96,14 +110,12 @@ chat.scrollTop = chat.scrollHeight;
 
 // Enter سے Send
 input.addEventListener("keydown", function (event) {
-
   if (event.key === "Enter") {
     sendMessage();
   }
-
 });
 
-// Chat صاف کرنے کا فنکشن
+// Chat صاف کریں
 function clearChat() {
 
   if (confirm("کیا آپ پوری Chat حذف کرنا چاہتے ہیں؟")) {
