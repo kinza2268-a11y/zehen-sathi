@@ -14,18 +14,14 @@
 
 <div class="container">
 
-<div class="app-header">
+  <div class="app-header">
+    <div class="logo">🤖</div>
 
-  <div class="logo">
-    🤖
+    <div class="title-area">
+      <h2>ZEHEN SATHI AI</h2>
+      <small>Pi Network کے لیے ذہین AI اسسٹنٹ</small>
+    </div>
   </div>
-
-  <div class="title-area">
-    <h2>ZEHEN SATHI AI</h2>
-    <small>Powered by AI</small>
-  </div>
-
-</div>
 
   <button id="signin">Pi سے Sign In کریں</button>
 
@@ -41,12 +37,12 @@
       placeholder="اپنا سوال لکھیں...">
 
     <button id="sendBtn" onclick="sendMessage()">
-  📤
-</button>
+      📤
+    </button>
 
-<button id="clearBtn" onclick="clearChat()">
-  🗑️
-</button>
+    <button id="clearBtn" onclick="clearChat()">
+      🗑️
+    </button>
 
   </div>
 
@@ -70,17 +66,13 @@ async function login() {
     );
 
     const response = await fetch("/api/auth", {
-
       method: "POST",
-
       headers: {
         "Content-Type": "application/json"
       },
-
       body: JSON.stringify({
         accessToken: auth.accessToken
       })
-
     });
 
     const data = await response.json();
@@ -108,10 +100,7 @@ async function login() {
 
 }
 
-document
-.getElementById("signin")
-.addEventListener("click", login);
-
+document.getElementById("signin").addEventListener("click", login);
 </script>
 
 <script src="script.js"></script>
