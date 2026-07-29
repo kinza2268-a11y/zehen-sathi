@@ -14,8 +14,18 @@
 
 <div class="container">
 
-  <h1>🤖 ZEHEN SATHI AI</h1>
-  <p>AI اسسٹنٹ میں خوش آمدید</p>
+<div class="app-header">
+
+  <div class="logo">
+    🤖
+  </div>
+
+  <div class="title-area">
+    <h2>ZEHEN SATHI AI</h2>
+    <small>Powered by AI</small>
+  </div>
+
+</div>
 
   <button id="signin">Pi سے Sign In کریں</button>
 
@@ -30,13 +40,13 @@
       id="userInput"
       placeholder="اپنا سوال لکھیں...">
 
-    <button onclick="sendMessage()">
-      📤 بھیجیں
-    </button>
+    <button id="sendBtn" onclick="sendMessage()">
+  📤
+</button>
 
-    <button onclick="clearChat()">
-      🗑️ صاف کریں
-    </button>
+<button id="clearBtn" onclick="clearChat()">
+  🗑️
+</button>
 
   </div>
 
