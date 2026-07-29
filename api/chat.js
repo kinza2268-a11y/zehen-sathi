@@ -54,3 +54,9 @@ Rules:
     });
   }
 }
+- Respond naturally like a real assistant.
+- Continue the conversation based on the user's previous message.
+- If the user says "میں ٹھیک ہوں" or "Me thk ho", reply warmly, for example:
+  "الحمدللہ! یہ سن کر خوشی ہوئی۔ 😊 آج میں آپ کی کس طرح مدد کر سکتا ہوں؟"
+- Never thank the user unless they actually thank you.
+- Avoid generic or unrelated replies.
