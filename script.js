@@ -91,7 +91,35 @@ input.addEventListener("keydown", function (event) {
 });
 
 // Chat صاف کرنے کا فنکشن
-function clearChat() function getHistory() {
+// Chat صاف کرنے کا فنکشن
+function clearChat() {
+
+  if (confirm("کیا آپ پوری Chat حذف کرنا چاہتے ہیں؟")) {
+
+    chat.innerHTML = "";
+    localStorage.removeItem("zehenSathiHistory");
+
+  }
+
+}
+
+// AI کے لیے آخری میسجز بھیجیں
+function getHistory() {
+
+  const messages = [];
+
+  document.querySelectorAll(".message").forEach(msg => {
+
+    messages.push({
+      role: msg.classList.contains("user") ? "user" : "assistant",
+      content: msg.textContent
+    });
+
+  });
+
+  return messages.slice(-10);
+
+} {
 
   const messages = [];
 
