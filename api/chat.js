@@ -1,23 +1,23 @@
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ reply: "Method not allowed" });
+    return res.status(405).json({
+      reply: "Method not allowed"
+    });
   }
 
   try {
-    const { message } = req.body;
+    const { message, history = [] } = req.body;
 
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        model: "openai/gpt-oss-20b:free",
-        messages: [
+    if (!message) {
+      return res.status(400).json({
+        reply: "براہ کرم اپنا سوال لکھیں۔"
+      });
+    }
+
+    const messages = [
       {
-  role: "system",
-  content: `
+        role: "system",
+        content: `
 You are ZEHEN SATHI AI.
 
 Rules:
@@ -30,15 +30,35 @@ Rules:
 - Keep answers clear and easy to understand.
 - If you don't know something, honestly say you don't know instead of guessing.
 - Help users with AI, education, technology, programming, Pi Network and general knowledge.
+- Respond naturally like a real assistant.
+- Continue the conversation based on the user's previous messages.
+- If the user says "میں ٹھیک ہوں" or "Me thk ho", reply warmly, for example:
+  "الحمدللہ! یہ سن کر خوشی ہوئی۔ 😊 آج میں آپ کی کس طرح مدد کر سکتا ہوں؟"
+- Never thank the user unless they actually thank you.
+- Avoid generic or unrelated replies.
 `
-}
-          {
-            role: "user",
-            content: message
-          }
-        ]
-      })
-    });
+      },
+      ...history.slice(-10),
+      {
+        role: "user",
+        content: message
+      }
+    ];
+
+    const response = await fetch(
+      "https://openrouter.ai/api/v1/chat/completions",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: "openai/gpt-oss-20b:free",
+          messages: messages
+        })
+      }
+    );
 
     const data = await response.json();
 
@@ -46,17 +66,14 @@ Rules:
       data?.choices?.[0]?.message?.content ||
       "معذرت، ابھی جواب دستیاب نہیں۔";
 
-    res.status(200).json({ reply });
+    return res.status(200).json({ reply });
 
   } catch (error) {
-    res.status(500).json({
-      reply: "Server Error"
+
+    console.error(error);
+
+    return res.status(500).json({
+      reply: "❌ سرور سے رابطہ نہیں ہو سکا۔"
     });
   }
 }
-- Respond naturally like a real assistant.
-- Continue the conversation based on the user's previous message.
-- If the user says "میں ٹھیک ہوں" or "Me thk ho", reply warmly, for example:
-  "الحمدللہ! یہ سن کر خوشی ہوئی۔ 😊 آج میں آپ کی کس طرح مدد کر سکتا ہوں؟"
-- Never thank the user unless they actually thank you.
-- Avoid generic or unrelated replies.
