@@ -53,8 +53,9 @@ async function sendMessage() {
       },
 
       body: JSON.stringify({
-        message: message
-      })
+  message: message,
+  history: getHistory()
+})
 
     });
 
@@ -90,7 +91,22 @@ input.addEventListener("keydown", function (event) {
 });
 
 // Chat صاف کرنے کا فنکشن
-function clearChat() {
+function clearChat() function getHistory() {
+
+  const messages = [];
+
+  document.querySelectorAll(".message").forEach(msg => {
+
+    messages.push({
+      role: msg.classList.contains("user") ? "user" : "assistant",
+      content: msg.textContent
+    });
+
+  });
+
+  return messages.slice(-10);
+
+}
 
   if (confirm("کیا آپ پوری Chat حذف کرنا چاہتے ہیں؟")) {
 
