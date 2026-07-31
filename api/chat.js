@@ -42,10 +42,22 @@ export default async function handler(req, res) {
       // Mera nam Bushra hy
       // Mera name Bushra hai
       // میرا نام بشریٰ ہے
-      const match = text.match(
-        /(?:mera\s+nam|mera\s+name|میرا\s+نام)\s+([A-Za-z\u0600-\u06FF]+)(?:\s+(?:hai|hy|ہے))?/i
-      );
+      
+const match = text.match(
+  /^(?:mera\s+nam|mera\s+name)\s+([A-Za-z]+)(?:\s+(?:hai|hy))?[؟?]?$/i
+);
 
+const urduMatch = text.match(
+  /^میرا\s+نام\s+([\u0600-\u06FF]+)(?:\s+ہے)?[؟?]?$/i
+);
+
+if (match && match[1]) {
+  userName = match[1].trim();
+}
+
+if (urduMatch && urduMatch[1]) {
+  userName = urduMatch[1].trim();
+}
       if (match && match[1]) {
         userName = match[1].trim();
       }
