@@ -14,42 +14,36 @@ export default async function handler(req, res) {
       });
     }
 
-    // صرف درست conversation messages رکھیں
     const cleanHistory = Array.isArray(history)
       ? history
-          .filter(item =>
-            item &&
-            (item.role === "user" || item.role === "assistant") &&
-            typeof item.content === "string" &&
-            item.content.trim()
+          .filter(
+            item =>
+              item &&
+              (item.role === "user" || item.role === "assistant") &&
+              typeof item.content === "string" &&
+              item.content.trim()
           )
           .slice(-10)
       : [];
 
-    // User کا نام history سے تلاش کریں
+    // صارف کا نام تلاش کریں
     let userName = "";
 
-    for (const item of cleanHistory) {
-      if (item.role === "user") {
-        const text = item.content.trim();
+    const allUserMessages = [
+      ...cleanHistory
+        .filter(item => item.role === "user")
+        .map(item => item.content),
+      message
+    ];
 
-        const match = text.match(
-          /(?:mera|میرا)\s+(?:nam|name|نام)\s+(?:hai|hy|ہے|ہے؟)?\s*(?:is|ہے)?\s*([A-Za-z\u0600-\u06FF]+)/i
-        );
+    for (const text of allUserMessages) {
+      const match = text.match(
+        /(?:mera|میرا)\s+(?:nam|name|نام)\s*(?:hai|hy|ہے)?\s*(?:is|ہے)?\s*[:\-]?\s*([A-Za-z\u0600-\u06FF]{2,30})/i
+      );
 
-        if (match && match[1]) {
-          userName = match[1].trim();
-        }
+      if (match && match[1]) {
+        userName = match[1].trim();
       }
-    }
-
-    // موجودہ message سے بھی نام تلاش کریں
-    const currentNameMatch = message.trim().match(
-      /(?:mera|میرا)\s+(?:nam|name|نام)\s+(?:hai|hy|ہے|ہے؟)?\s*(?:is|ہے)?\s*([A-Za-z\u0600-\u06FF]+)/i
-    );
-
-    if (currentNameMatch && currentNameMatch[1]) {
-      userName = currentNameMatch[1].trim();
     }
 
     const systemMessage = `
@@ -67,11 +61,15 @@ IMPORTANT RULES:
 - Keep answers clear and easy to understand.
 - Do not invent information.
 
-CONVERSATION MEMORY:
+USER MEMORY:
 
-${userName
-  ? `The user's name is "${userName}". If the user asks their name, tell them their name is ${userName}.`
-  : "The user's name is not currently known."}
+${
+  userName
+    ? `The user's name is "${userName}". Their name is ${userName}. If they ask "Mera nam kia hy?" or "میرا نام کیا ہے؟", answer: "آپ کا نام ${userName} ہے۔ 😊"`
+    : "The user's name is not known yet."
+}
+
+If the user tells you their name, remember it.
 
 If the user says:
 "Assalam o Alaikum"
@@ -82,12 +80,10 @@ If the user says:
 "Me thk ho"
 or
 "میں ٹھیک ہوں"
-reply warmly:
+reply:
 "الحمدللہ! یہ سن کر خوشی ہوئی۔ 😊 آج میں آپ کی کس طرح مدد کر سکتا ہوں؟"
 
-If the user tells you their name, remember it during this conversation.
-
-Never say that you do not know the user's name if the conversation history contains their name.
+Never say you do not know the user's name when the user's name is already available above.
 `;
 
     const messages = [
@@ -112,8 +108,8 @@ Never say that you do not know the user's name if the conversation history conta
         },
         body: JSON.stringify({
           model: "openai/gpt-oss-20b:free",
-          messages: messages,
-          temperature: 0.3,
+          messages,
+          temperature: 0.2,
           max_tokens: 500
         })
       }
@@ -133,16 +129,15 @@ Never say that you do not know the user's name if the conversation history conta
       data?.choices?.[0]?.message?.content ||
       "معذرت، ابھی جواب دستیاب نہیں۔";
 
-    // Internal reasoning اگر model بھیج دے تو remove کریں
+    // Hidden reasoning remove کریں
     reply = reply
       .replace(/<think>[\s\S]*?<\/think>/gi, "")
       .replace(/<analysis>[\s\S]*?<\/analysis>/gi, "")
       .trim();
 
-    // اگر user نے اپنا نام بتایا اور نام پوچھا تو
-    // ہم خود درست جواب دیں گے
+    // نام پوچھنے پر direct جواب
     const askingName =
-      /(?:mera|میرا)\s+(?:nam|name|نام)\s+(?:kia|کیا|what)/i.test(
+      /(?:mera|میرا)\s+(?:nam|name|نام)\s*(?:kia|کیا|what)/i.test(
         message.trim()
       );
 
@@ -151,7 +146,7 @@ Never say that you do not know the user's name if the conversation history conta
     }
 
     return res.status(200).json({
-      reply: reply
+      reply
     });
 
   } catch (error) {
