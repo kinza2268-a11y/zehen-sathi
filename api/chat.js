@@ -71,12 +71,12 @@ export default async function handler(req, res) {
     // ==========================================
 
     const askingName =
-      /^(?:mera\s+(?:nam|naam|name)\s+kia\s+(?:hai|hy)|mera\s+kia\s+(?:nam|naam|name)\s+(?:hai|hy)|(?:what\s+is\s+)?my\s+name\s+(?:is|what))[\u061F?]?\s*$/i.test(
-        message.trim()
-      ) ||
-      /^میرا\s+(?:نام\s+کیا\s+ہے|کیا\s+نام\s+ہے)[؟?]?\s*$/.test(
-        message.trim()
-      );
+  /^(?:mera\s+(?:nam|naam|name)\s+kia\s+(?:hai|hy)|mera\s+kia\s+(?:nam|naam|name)\s+(?:hai|hy)|(?:what\s+is\s+)?my\s+name\s+(?:is|what))[\u061F?]?\s*$/i.test(
+    message.trim()
+  ) ||
+  /^میرا\s+(?:نام\s+کیا\s+ہے|کیا\s+نام\s+ہے)[؟?]?\s*$/.test(
+    message.trim()
+  );
 
     // ==========================================
     // DIRECT NAME ANSWER
