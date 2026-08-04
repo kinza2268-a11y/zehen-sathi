@@ -250,14 +250,26 @@ async function sendMessage() {
     row.remove();
 
 
-    addMessage(
+    const reply =
+  data.reply ||
+  "معذرت، ابھی جواب دستیاب نہیں۔";
 
-      data.reply ||
-      "معذرت، ابھی جواب دستیاب نہیں۔",
+addMessage(reply, "bot");
 
-      "bot"
+// 🔊 AI Voice Reply
+if ("speechSynthesis" in window) {
 
-    );
+  window.speechSynthesis.cancel();
+
+  const speech =
+    new SpeechSynthesisUtterance(reply);
+
+  speech.lang = "ur-PK";
+  speech.rate = 0.9;
+  speech.pitch = 1;
+
+  window.speechSynthesis.speak(speech);
+}
 
 
   } catch (error) {
