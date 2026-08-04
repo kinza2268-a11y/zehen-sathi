@@ -325,3 +325,63 @@ function clearChat() {
   }
 
 }
+// ==========================================
+// 🎤 VOICE INPUT
+// ==========================================
+
+const voiceBtn = document.getElementById("voiceBtn");
+
+const SpeechRecognition =
+  window.SpeechRecognition ||
+  window.webkitSpeechRecognition;
+
+if (voiceBtn && SpeechRecognition) {
+
+  const recognition = new SpeechRecognition();
+
+  recognition.lang = "ur-PK";
+  recognition.continuous = false;
+  recognition.interimResults = false;
+
+  voiceBtn.addEventListener("click", function () {
+
+    recognition.start();
+
+    voiceBtn.textContent = "🔴";
+
+  });
+
+  recognition.onresult = function (event) {
+
+    const transcript =
+      event.results[0][0].transcript;
+
+    input.value = transcript;
+
+  };
+
+  recognition.onend = function () {
+
+    voiceBtn.textContent = "🎤";
+
+  };
+
+  recognition.onerror = function (event) {
+
+    console.error(
+      "Voice Error:",
+      event.error
+    );
+
+    voiceBtn.textContent = "🎤";
+
+  };
+
+} else if (voiceBtn) {
+
+  voiceBtn.disabled = true;
+
+  voiceBtn.title =
+    "آپ کے browser میں Voice Input supported نہیں ہے۔";
+
+}
