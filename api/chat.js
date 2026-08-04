@@ -346,7 +346,7 @@ You are ZEHEN SATHI AI.
         },
 
         body: JSON.stringify({
-          model: "openai/gpt-oss-20b:free",
+          model: "openrouter/free",
           messages: messages,
           temperature: 0.3,
           max_tokens: 500
