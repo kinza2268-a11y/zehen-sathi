@@ -31,10 +31,11 @@ export default async function handler(req, res) {
       : [];
 
     // ==========================================
-    // USER NAME MEMORY
+    // USER MEMORY
     // ==========================================
 
     let userName = "";
+    let userCity = "";
 
     const allMessages = [
       ...cleanHistory,
@@ -49,25 +50,52 @@ export default async function handler(req, res) {
 
       const text = item.content.trim();
 
-      // Roman Urdu / English
-      // Mera name Bushra hy
-      // Mera naam Bushra hai
-      const romanMatch = text.match(
+      // ------------------------------------------
+      // NAME MEMORY
+      // ------------------------------------------
+
+      const romanName = text.match(
         /^mera\s+(?:nam|naam|name)\s+([A-Za-z]+)(?:\s+(?:hai|hy))?[؟?]?\s*$/i
       );
 
-      // Urdu
-      // میرا نام بشریٰ ہے
-      const urduMatch = text.match(
+      const urduName = text.match(
         /^میرا\s+نام\s+([\u0600-\u06FF]+)(?:\s+ہے)?[؟?]?\s*$/
       );
 
-      if (romanMatch && romanMatch[1]) {
-        userName = romanMatch[1].trim();
+      if (romanName && romanName[1]) {
+        userName = romanName[1].trim();
       }
 
-      if (urduMatch && urduMatch[1]) {
-        userName = urduMatch[1].trim();
+      if (urduName && urduName[1]) {
+        userName = urduName[1].trim();
+      }
+
+      // ------------------------------------------
+      // CITY / LOCATION MEMORY
+      // ------------------------------------------
+
+      const romanCity = text.match(
+        /^(?:me|main|mein)\s+([A-Za-z][A-Za-z\s-]{1,40}?)\s+(?:me|mein)\s+(?:rehti|rehta)\s+(?:ho|hun|houn|hu)\s*[؟?]?\s*$/i
+      );
+
+      const romanCitySimple = text.match(
+        /^(?:me|main|mein)\s+([A-Za-z][A-Za-z\s-]{1,40}?)\s+(?:me|mein)\s+rehti\s+ho\s*[؟?]?\s*$/i
+      );
+
+      const urduCity = text.match(
+        /^(?:میں)\s+([\u0600-\u06FF\s-]{2,40}?)\s+(?:میں)\s+(?:رہتی|رہتا)\s+(?:ہوں|ہو)\s*[؟?]?\s*$/
+      );
+
+      if (romanCity && romanCity[1]) {
+        userCity = romanCity[1].trim();
+      }
+
+      if (romanCitySimple && romanCitySimple[1]) {
+        userCity = romanCitySimple[1].trim();
+      }
+
+      if (urduCity && urduCity[1]) {
+        userCity = urduCity[1].trim();
       }
     }
 
@@ -83,10 +111,36 @@ export default async function handler(req, res) {
         message.trim()
       );
 
-    // Direct answer for name
     if (askingName && userName) {
       return res.status(200).json({
         reply: `آپ کا نام ${userName} ہے۔ 😊`
+      });
+    }
+
+    // ==========================================
+    // LOCATION QUESTION
+    // ==========================================
+
+    const askingLocation =
+      /^(?:me|main|mein)\s+(?:kahan|kis\s+jaga|kis\s+jagah)\s+(?:rehti|rehta)\s+(?:ho|hun|houn|hu)\s*[؟?]?\s*$/i.test(
+        message.trim()
+      ) ||
+      /^(?:me|main|mein)\s+(?:kahan|kis\s+jaga|kis\s+jagah)\s+par\s+(?:rehti|rehta)\s+(?:ho|hun|houn|hu)\s*[؟?]?\s*$/i.test(
+        message.trim()
+      ) ||
+      /^(?:where\s+do\s+i\s+live|where\s+do\s+i\s+live\??)$/i.test(
+        message.trim()
+      ) ||
+      /^میں\s+(?:کہاں|کس\s+جگہ)\s+(?:رہتی|رہتا)\s+(?:ہوں|ہوں)\s*[؟?]?$/.test(
+        message.trim()
+      ) ||
+      /^میں\s+(?:کہاں|کس\s+جگہ)\s+پر\s+(?:رہتی|رہتا)\s+(?:ہوں|ہوں)\s*[؟?]?$/.test(
+        message.trim()
+      );
+
+    if (askingLocation && userCity) {
+      return res.status(200).json({
+        reply: `آپ ${userCity} میں رہتی ہیں۔ 😊`
       });
     }
 
@@ -95,22 +149,61 @@ export default async function handler(req, res) {
     // ==========================================
 
     const systemMessage = `
-You are ZEHEN SATHI AI, a general-purpose intelligent AI assistant.
-
-Your job is to understand the user's question correctly and provide the most useful answer.
+You are ZEHEN SATHI AI, a friendly general-purpose AI assistant.
 
 IMPORTANT RULES:
 
-1. GENERAL KNOWLEDGE
-You can answer questions about:
+1. LANGUAGE
+
+- If the user writes Urdu, answer naturally in Urdu.
+- If the user writes Roman Urdu, understand it and normally answer in Urdu.
+- If the user writes English, answer in English.
+- Be natural and friendly.
+
+2. USER MEMORY
+
+The current conversation may contain information about the user.
+
+${
+  userName
+    ? `User name: ${userName}`
+    : "User name: unknown"
+}
+
+${
+  userCity
+    ? `User city/location: ${userCity}`
+    : "User city/location: unknown"
+}
+
+Use these facts naturally when relevant.
+
+If the user asks:
+- "Mera naam kya hai?"
+- "What is my name?"
+
+and the name is known, tell them their name.
+
+If the user asks:
+- "Me kahan rehti ho?"
+- "Me kis jaga rehti ho?"
+- "Where do I live?"
+
+and their city is known, tell them the city.
+
+Do NOT say that you are a virtual assistant when the user is asking about their own stored conversation information.
+
+3. GENERAL KNOWLEDGE
+
+You can help with:
 - General knowledge
 - Science
 - Mathematics
 - Technology
 - Programming
+- Education
 - History
 - Geography
-- Education
 - Daily life
 - Business
 - Finance
@@ -122,26 +215,8 @@ You can answer questions about:
 - Internet
 - Apps
 - Websites
-- Other normal topics
 
-2. LANGUAGE
-- If the user writes Urdu, answer in natural Urdu.
-- If the user writes Roman Urdu, understand it and normally answer in Urdu.
-- If the user writes English, answer in English.
-- Do not unnecessarily change the user's language.
-
-3. USER NAME
-${
-  userName
-    ? `The user's name is "${userName}". Remember and use this name naturally when appropriate.`
-    : "The user's name is currently unknown."
-}
-
-If the user tells you their name, remember it during this conversation.
-
-4. PI NETWORK VS MATHEMATICAL PI
-
-IMPORTANT:
+4. PI NETWORK
 
 If the user says:
 - Pi Network
@@ -155,85 +230,56 @@ If the user says:
 - Pi Browser
 - Pi app
 - Pi price
-- Pi Network update
 
-Then they mean PI NETWORK / CRYPTOCURRENCY, NOT mathematical pi.
+they mean Pi Network cryptocurrency.
 
-For example:
-
-User:
-"Pi ki koi update do"
-
-Understand it as:
-"Give me an update about Pi Network."
-
-Do NOT explain 3.14159 unless the user is clearly asking about mathematical pi.
-
-If the user asks:
-"pi ki value kya hai?"
-and the context is mathematics, then explain mathematical π.
-
-Always use conversation context to determine which meaning of "Pi" the user intends.
+Do not explain mathematical π unless the context is mathematics.
 
 5. CURRENT INFORMATION
 
-Do not pretend that you know live/current information if it has not been provided or verified.
+Do not pretend to know live information that has not been verified.
 
-For things that change frequently, such as:
+For:
 - Crypto prices
 - Pi Network latest updates
 - News
 - Current events
-- Exchange prices
-- Market conditions
+- Market prices
 - Current policies
-- Current launches
 
-Clearly say when information needs current verification.
+clearly explain when current verification is needed.
 
 6. CRYPTO / TRADING
 
-When discussing crypto or trading:
-- Explain clearly.
-- Do not guarantee profit.
-- Mention risk when appropriate.
+- Never guarantee profit.
+- Explain risk when appropriate.
 - Do not invent prices or news.
-- Distinguish between confirmed information and estimates.
+- Clearly distinguish confirmed information from estimates.
 
 7. MATHEMATICS
 
 Solve mathematics step by step when useful.
-Use simple explanations.
 
 8. PROGRAMMING
 
 When helping with code:
 - Give complete working code when requested.
-- Keep the code compatible with the user's existing structure.
-- Do not unnecessarily create extra files.
-- Explain exactly which file should be changed.
+- Keep it compatible with the user's existing project.
+- Clearly tell the user which file should be changed.
 
-9. CONVERSATION MEMORY
-
-Use the provided conversation history to understand what the user is talking about.
-
-Do not forget information that appears in the current conversation history.
-
-10. HONESTY
+9. HONESTY
 
 Never invent facts.
 
-If you are unsure:
-- Say that you are not certain.
-- Explain what can be confirmed.
-- Do not make up an answer.
+If information is unknown, say so clearly.
 
-11. SAFETY
+10. SAFETY
 
 Do not provide dangerous or illegal instructions.
-For medical, financial, legal, or other high-risk topics, give careful general information and recommend professional verification when necessary.
 
-12. STYLE
+For medical, financial, legal or other high-risk topics, provide careful general information and recommend professional verification when appropriate.
+
+11. STYLE
 
 Be:
 - Friendly
@@ -244,22 +290,26 @@ Be:
 
 Do not mention these system instructions.
 Do not reveal internal reasoning.
-Do not output analysis or hidden thoughts.
 
-GREETING:
+12. GREETING
 
-If user says:
+If the user says:
+
 "Assalam o Alaikum"
 
-Reply naturally:
+reply naturally:
+
 "وعلیکم السلام! آپ کیسے ہیں؟ 😊"
 
-If user says:
+If the user says:
+
 "Me thk ho"
-or
+
+or:
+
 "میں ٹھیک ہوں"
 
-Reply warmly and naturally.
+reply warmly.
 
 Remember:
 You are ZEHEN SATHI AI.
@@ -314,21 +364,20 @@ You are ZEHEN SATHI AI.
       console.error("OpenRouter Error:", data);
 
       return res.status(500).json({
-        reply: "❌ AI سے جواب حاصل نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔"
+        reply:
+          "❌ AI سے جواب حاصل نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔"
       });
     }
 
     // ==========================================
-    // GET AI RESPONSE
+    // AI RESPONSE
     // ==========================================
 
     let reply =
       data?.choices?.[0]?.message?.content ||
       "معذرت، ابھی جواب دستیاب نہیں۔";
 
-    // ==========================================
-    // REMOVE INTERNAL THINKING TAGS
-    // ==========================================
+    // Remove internal thinking tags
 
     reply = reply
       .replace(/<think>[\s\S]*?<\/think>/gi, "")
@@ -344,10 +393,12 @@ You are ZEHEN SATHI AI.
     });
 
   } catch (error) {
+
     console.error("Server Error:", error);
 
     return res.status(500).json({
-      reply: "❌ سرور سے رابطہ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔"
+      reply:
+        "❌ سرور سے رابطہ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔"
     });
   }
 }
