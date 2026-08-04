@@ -140,7 +140,7 @@ function getHistory() {
     });
 
 
-  return messages.slice(-10);
+  return messages.slice(-20);
 
 }
 
