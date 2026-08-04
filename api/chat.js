@@ -361,13 +361,17 @@ You are ZEHEN SATHI AI.
     // ==========================================
 
     if (!response.ok) {
-      console.error("OpenRouter Error:", data);
+  console.error("OpenRouter Error:", data);
 
-      return res.status(500).json({
-        reply:
-          "❌ AI سے جواب حاصل نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔"
-      });
-    }
+  return res.status(response.status).json({
+    reply:
+      "❌ OpenRouter Error: " +
+      (
+        data?.error?.message ||
+        JSON.stringify(data)
+      )
+  });
+}
 
     // ==========================================
     // AI RESPONSE
@@ -392,13 +396,13 @@ You are ZEHEN SATHI AI.
       reply: reply
     });
 
-  } catch (error) {
+  
+} catch (error) {
 
-    console.error("Server Error:", error);
+  console.error("Server Error:", error);
 
-    return res.status(500).json({
-      reply:
-        "❌ سرور سے رابطہ نہیں ہو سکا۔ براہ کرم دوبارہ کوشش کریں۔"
-    });
-  }
+  return res.status(500).json({
+    reply:
+      "❌ Server Error: " + error.message
+  });
 }
