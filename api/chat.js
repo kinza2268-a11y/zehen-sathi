@@ -346,11 +346,11 @@ You are ZEHEN SATHI AI.
         },
 
         body: JSON.stringify({
-          model: "moonshotai/kimi-k2:free"
-          messages: messages,
-          temperature: 0.3,
-          max_tokens: 500
-        })
+  model: "moonshotai/kimi-k2:free",
+  messages: messages,
+  temperature: 0.3,
+  max_tokens: 500
+})
       }
     );
 
