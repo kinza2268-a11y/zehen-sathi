@@ -346,7 +346,7 @@ You are ZEHEN SATHI AI.
         },
 
         body: JSON.stringify({
-          model: "openrouter/free",
+          model: "moonshotai/kimi-k2:free"
           messages: messages,
           temperature: 0.3,
           max_tokens: 500
