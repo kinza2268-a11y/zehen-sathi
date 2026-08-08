@@ -21,7 +21,7 @@ export default async function handler(req, res) {
     const cleanHistory = Array.isArray(history)
       ? history
           .filter(
-            m =>
+            (m) =>
               m &&
               (m.role === "user" || m.role === "assistant") &&
               typeof m.content === "string" &&
@@ -51,12 +51,16 @@ export default async function handler(req, res) {
       const text = item.content.trim();
 
       // ------------------------------------------
-      // NAME MEMORY
+      // NAME MEMORY - ROMAN URDU
       // ------------------------------------------
 
       const romanName = text.match(
         /^mera\s+(?:nam|naam|name)\s+([A-Za-z]+)(?:\s+(?:hai|hy))?[؟?]?\s*$/i
       );
+
+      // ------------------------------------------
+      // NAME MEMORY - URDU
+      // ------------------------------------------
 
       const urduName = text.match(
         /^میرا\s+نام\s+([\u0600-\u06FF]+)(?:\s+ہے)?[؟?]?\s*$/
@@ -71,28 +75,27 @@ export default async function handler(req, res) {
       }
 
       // ------------------------------------------
-      // CITY / LOCATION MEMORY
+      // CITY MEMORY - ROMAN URDU
+      // Example:
+      // Me Multan me rehti ho
+      // Main Lahore mein rehti hun
       // ------------------------------------------
 
       const romanCity = text.match(
         /^(?:me|main|mein)\s+([A-Za-z][A-Za-z\s-]{1,40}?)\s+(?:me|mein)\s+(?:rehti|rehta)\s+(?:ho|hun|houn|hu)\s*[؟?]?\s*$/i
       );
 
-      const romanCitySimple = text.match(
-        /^(?:me|main|mein)\s+([A-Za-z][A-Za-z\s-]{1,40}?)\s+(?:me|mein)\s+rehti\s+ho\s*[؟?]?\s*$/i
-      );
-
-      const urduCity = text.match(
-        /^(?:میں)\s+([\u0600-\u06FF\s-]{2,40}?)\s+(?:میں)\s+(?:رہتی|رہتا)\s+(?:ہوں|ہو)\s*[؟?]?\s*$/
-      );
-
       if (romanCity && romanCity[1]) {
         userCity = romanCity[1].trim();
       }
 
-      if (romanCitySimple && romanCitySimple[1]) {
-        userCity = romanCitySimple[1].trim();
-      }
+      // ------------------------------------------
+      // CITY MEMORY - URDU
+      // ------------------------------------------
+
+      const urduCity = text.match(
+        /^میں\s+([\u0600-\u06FF\s-]{2,40}?)\s+میں\s+(?:رہتی|رہتا)\s+(?:ہوں|ہو)\s*[؟?]?\s*$/
+      );
 
       if (urduCity && urduCity[1]) {
         userCity = urduCity[1].trim();
@@ -131,10 +134,10 @@ export default async function handler(req, res) {
       /^(?:where\s+do\s+i\s+live|where\s+do\s+i\s+live\??)$/i.test(
         message.trim()
       ) ||
-      /^میں\s+(?:کہاں|کس\s+جگہ)\s+(?:رہتی|رہتا)\s+(?:ہوں|ہوں)\s*[؟?]?$/.test(
+      /^میں\s+(?:کہاں|کس\s+جگہ)\s+(?:رہتی|رہتا)\s+(?:ہوں|ہو)\s*[؟?]?$/.test(
         message.trim()
       ) ||
-      /^میں\s+(?:کہاں|کس\s+جگہ)\s+پر\s+(?:رہتی|رہتا)\s+(?:ہوں|ہوں)\s*[؟?]?$/.test(
+      /^میں\s+(?:کہاں|کس\s+جگہ)\s+پر\s+(?:رہتی|رہتا)\s+(?:ہوں|ہو)\s*[؟?]?$/.test(
         message.trim()
       );
 
@@ -335,6 +338,15 @@ You are ZEHEN SATHI AI.
     // OPENROUTER
     // ==========================================
 
+    if (!process.env.OPENROUTER_API_KEY) {
+      console.error("OPENROUTER_API_KEY is missing");
+
+      return res.status(500).json({
+        reply:
+          "❌ OpenRouter API key configure نہیں ہے۔ Vercel Environment Variables چیک کریں۔"
+      });
+    }
+
     const response = await fetch(
       "https://openrouter.ai/api/v1/chat/completions",
       {
@@ -342,15 +354,17 @@ You are ZEHEN SATHI AI.
 
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "HTTP-Referer": "https://zehen-sathi.vercel.app",
+          "X-Title": "ZEHEN SATHI AI"
         },
 
         body: JSON.stringify({
-  model: "moonshotai/kimi-k2:free",
-  messages: messages,
-  temperature: 0.3,
-  max_tokens: 500
-})
+          model: "moonshotai/kimi-k2:free",
+          messages: messages,
+          temperature: 0.3,
+          max_tokens: 500
+        })
       }
     );
 
@@ -361,17 +375,17 @@ You are ZEHEN SATHI AI.
     // ==========================================
 
     if (!response.ok) {
-  console.error("OpenRouter Error:", data);
+      console.error("OpenRouter Error:", data);
 
-  return res.status(response.status).json({
-    reply:
-      "❌ OpenRouter Error: " +
-      (
-        data?.error?.message ||
-        JSON.stringify(data)
-      )
-  });
-}
+      return res.status(response.status).json({
+        reply:
+          "❌ OpenRouter Error: " +
+          (
+            data?.error?.message ||
+            JSON.stringify(data)
+          )
+      });
+    }
 
     // ==========================================
     // AI RESPONSE
@@ -396,13 +410,13 @@ You are ZEHEN SATHI AI.
       reply: reply
     });
 
-  
-} catch (error) {
+  } catch (error) {
 
-  console.error("Server Error:", error);
+    console.error("Server Error:", error);
 
-  return res.status(500).json({
-    reply:
-      "❌ Server Error: " + error.message
-  });
+    return res.status(500).json({
+      reply:
+        "❌ Server Error: " + error.message
+    });
+  }
 }
