@@ -414,3 +414,105 @@ button:disabled {
   opacity: .55;
   cursor: not-allowed;
 }
+/* ==========================================
+   CHAT BUTTONS - VOICE + IMAGE
+========================================== */
+
+.input-area {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 48px 48px 48px 48px;
+  gap: 8px;
+  align-items: center;
+}
+
+.input-area button,
+.upload-btn {
+  width: 48px;
+  height: 46px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 19px;
+  cursor: pointer;
+  background: #0d6efd;
+  color: white;
+}
+
+.upload-btn {
+  background: #198754;
+  color: white;
+  transition: 0.2s ease;
+}
+
+.upload-btn:hover {
+  background: #157347;
+  transform: translateY(-1px);
+}
+
+#voiceBtn {
+  background: #6f42c1;
+}
+
+#voiceBtn:hover {
+  background: #59359a;
+}
+
+#sendBtn {
+  background: #0d6efd;
+}
+
+#clearBtn {
+  background: #dc3545;
+}
+
+#clearBtn:hover {
+  background: #bb2d3b;
+}
+
+
+/* ==========================================
+   MOBILE BUTTONS
+========================================== */
+
+@media (max-width: 600px) {
+
+  .input-area {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px 44px 44px 44px;
+    gap: 5px;
+  }
+
+  .input-area button,
+  .upload-btn {
+    width: 44px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+    font-size: 18px;
+  }
+
+}
+
+
+/* ==========================================
+   VERY SMALL PHONES
+========================================== */
+
+@media (max-width: 380px) {
+
+  .input-area {
+    grid-template-columns: minmax(0, 1fr) 40px 40px 40px 40px;
+    gap: 4px;
+  }
+
+  .input-area button,
+  .upload-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+}
