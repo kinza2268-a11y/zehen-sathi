@@ -295,9 +295,7 @@ You are ZEHEN SATHI AI.
       support کرتا ہو۔
     */
 
-    const model = image
-      ? "google/gemini-2.5-flash"
-      : "moonshotai/kimi-k2:free";
+    const model = "google/gemini-2.5-flash";
 
     // ==========================================
     // OPENROUTER REQUEST
