@@ -516,3 +516,68 @@ button:disabled {
   }
 
 }
+/* ==========================================
+   CHAT INPUT + BUTTONS FIX
+========================================== */
+
+.input-area {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 48px 48px 48px 48px !important;
+  gap: 8px !important;
+  align-items: center !important;
+  width: 100%;
+}
+
+#userInput {
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+.input-area button,
+.input-area .upload-btn {
+  width: 48px !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.upload-btn {
+  cursor: pointer;
+}
+
+
+/* Mobile */
+@media (max-width: 600px) {
+
+  .input-area {
+    grid-template-columns: minmax(0, 1fr) 44px 44px 44px 44px !important;
+    gap: 5px !important;
+  }
+
+  .input-area button,
+  .input-area .upload-btn {
+    width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+}
+
+
+/* Very small phone */
+@media (max-width: 380px) {
+
+  .input-area {
+    grid-template-columns: minmax(0, 1fr) 40px 40px 40px 40px !important;
+    gap: 4px !important;
+  }
+
+  .input-area button,
+  .input-area .upload-btn {
+    width: 40px !important;
+    height: 40px !important;
+  }
+}
