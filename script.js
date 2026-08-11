@@ -1,41 +1,102 @@
+"use strict";
+
+// ==========================================
+// ZEHEN SATHI AI — MAIN SCRIPT
+// ==========================================
+
 const chat = document.getElementById("chat");
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 const clearBtn = document.getElementById("clearBtn");
 const voiceBtn = document.getElementById("voiceBtn");
 const imageInput = document.getElementById("imageInput");
-const imageUploadBtn = document.getElementById("imageUploadBtn");
+
+const CHAT_STORAGE_KEY = "zehenSathiHistory";
+const IMAGE_STORAGE_KEY = "zehenSathiLastImage";
 
 let selectedImage = null;
 let lastImage = null;
 let isSending = false;
 
-const HISTORY_KEY = "zehenSathiHistory";
-const IMAGE_KEY = "zehenSathiLastImage";
+
+// ==========================================
+// INITIAL LOAD
+// ==========================================
+
+window.addEventListener("DOMContentLoaded", () => {
+
+  loadChat();
+  loadLastImage();
+
+  if (chat && chat.children.length === 0) {
+    addMessage(
+      "السلام علیکم! 👋 میں ZEHEN SATHI AI ہوں۔ آپ اردو، Roman Urdu یا English میں سوال پوچھ سکتے ہیں۔",
+      "bot",
+      false
+    );
+  }
+
+});
 
 
 // ==========================================
-// LOAD SAVED DATA
+// LOAD CHAT
 // ==========================================
 
-function loadStoredData() {
+function loadChat() {
+
+  if (!chat) return;
+
   try {
-    const history = localStorage.getItem(HISTORY_KEY);
 
-    if (history && chat) {
+    const history =
+      localStorage.getItem(CHAT_STORAGE_KEY);
+
+    if (history) {
+
       chat.innerHTML = history;
-      chat.scrollTop = chat.scrollHeight;
+
+      chat.scrollTop =
+        chat.scrollHeight;
+
     }
+
   } catch (error) {
-    console.error("Chat history load error:", error);
+
+    console.error(
+      "Chat load error:",
+      error
+    );
+
   }
 
+}
+
+
+// ==========================================
+// LOAD LAST IMAGE
+// ==========================================
+
+function loadLastImage() {
+
   try {
-    lastImage = sessionStorage.getItem(IMAGE_KEY) || null;
+
+    const image =
+      sessionStorage.getItem(IMAGE_STORAGE_KEY);
+
+    if (image) {
+      lastImage = image;
+    }
+
   } catch (error) {
-    console.error("Image memory load error:", error);
-    lastImage = null;
+
+    console.error(
+      "Image load error:",
+      error
+    );
+
   }
+
 }
 
 
@@ -44,84 +105,148 @@ function loadStoredData() {
 // ==========================================
 
 function saveChat() {
+
   if (!chat) return;
 
   try {
+
     localStorage.setItem(
-      HISTORY_KEY,
+      CHAT_STORAGE_KEY,
       chat.innerHTML
     );
+
   } catch (error) {
-    console.error("Save chat error:", error);
-  }
-}
 
-
-// ==========================================
-// SAVE LAST IMAGE
-// ==========================================
-
-function saveLastImage(image) {
-  lastImage = image;
-
-  try {
-    sessionStorage.setItem(
-      IMAGE_KEY,
-      image
-    );
-  } catch (error) {
-    console.warn(
-      "Image could not be saved:",
-      error
-    );
-  }
-}
-
-
-// ==========================================
-// CLEAR IMAGE
-// ==========================================
-
-function clearLastImage() {
-  selectedImage = null;
-  lastImage = null;
-
-  try {
-    sessionStorage.removeItem(IMAGE_KEY);
-  } catch (error) {
     console.error(
-      "Clear image error:",
+      "Chat save error:",
       error
     );
+
   }
+
 }
 
 
 // ==========================================
-// ESCAPE HTML
+// ADD MESSAGE
 // ==========================================
 
-function escapeHtml(text) {
-  return String(text)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
+function addMessage(
+  text,
+  sender,
+  save = true
+) {
+
+  if (!chat) return;
+
+  const row =
+    document.createElement("div");
+
+  row.className =
+    `chat-row ${sender}`;
+
+
+  const avatar =
+    document.createElement("div");
+
+  avatar.className =
+    "avatar";
+
+  avatar.textContent =
+    sender === "user"
+      ? "🧑"
+      : "🤖";
+
+
+  const message =
+    document.createElement("div");
+
+  message.className =
+    `message ${sender}`;
+
+  message.textContent =
+    String(text || "");
+
+
+  if (sender === "user") {
+
+    row.appendChild(message);
+    row.appendChild(avatar);
+
+  } else {
+
+    row.appendChild(avatar);
+    row.appendChild(message);
+
+  }
+
+
+  chat.appendChild(row);
+
+  chat.scrollTop =
+    chat.scrollHeight;
+
+
+  if (save) {
+    saveChat();
+  }
+
 }
 
 
 // ==========================================
-// FORMAT AI REPLY
+// ADD IMAGE MESSAGE
 // ==========================================
 
-function formatReply(text) {
-  let value = escapeHtml(text);
+function addImageMessage(
+  image,
+  sender = "user"
+) {
 
-  value = value.replace(
-    /\*\*(.+?)\*\*/g,
-    "<strong>$1</strong>"
-  );
+  if (!chat || !image) return;
 
-  value = value.replace(
-    /`([^`]+)`
+  const row =
+    document.createElement("div");
+
+  row.className =
+    `chat-row ${sender}`;
+
+
+  const avatar =
+    document.createElement("div");
+
+  avatar.className =
+    "avatar";
+
+  avatar.textContent =
+    sender === "user"
+      ? "🧑"
+      : "🤖";
+
+
+  const message =
+    document.createElement("div");
+
+  message.className =
+    `message ${sender}`;
+
+
+  const img =
+    document.createElement("img");
+
+  img.src =
+    image;
+
+  img.alt =
+    "Uploaded image";
+
+  img.style.maxWidth =
+    "220px";
+
+  img.style.maxHeight =
+    "220px";
+
+  img.style.width =
+    "auto";
+
+  img.style
