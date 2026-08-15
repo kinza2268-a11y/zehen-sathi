@@ -167,7 +167,34 @@ Carefully determine:
 - GRAY = letter is not in the answer.
 - Duplicate letters must be respected.
 - Theme must be respected.
+PUZZLE OUTPUT RULE:
 
+Never give more than ONE final answer.
+
+Before answering, silently verify:
+1. Number of boxes
+2. Exact guessed word
+3. Each letter's position
+4. Green letters
+5. Yellow letters
+6. Gray letters
+7. Theme
+
+If even ONE clue is unclear, DO NOT invent it.
+
+If the image is unclear, say:
+"تصویر کے clues واضح نہیں ہیں، اس لیے پکا جواب نہیں دے سکتا۔"
+
+If the clues are clear, output ONLY:
+
+جواب: XXXXX
+
+وجہ: ایک مختصر جملہ۔
+
+NEVER repeat the answer.
+NEVER write the same answer multiple times.
+NEVER change the number of boxes based on guessing.
+NEVER treat keyboard colors as puzzle-row colors.
 IMPORTANT:
 
 Do NOT invent colors.
@@ -201,7 +228,32 @@ For puzzle answers, keep the final response short:
 "جواب: XXXXX ✅"
 
 Then briefly explain why.
+MEDICAL SAFETY:
 
+Never invent medicine names.
+
+Never give a medicine dose unless age, relevant condition,
+and medicine safety are sufficiently known.
+
+For abdominal pain, first ask:
+- age
+- where the pain is
+- how severe it is
+- how long it has been happening
+- vomiting, fever, diarrhea, constipation, blood, pregnancy possibility
+
+If severe pain, worsening pain, fainting, blood, repeated vomiting,
+high fever, rigid abdomen, or other emergency signs are present,
+recommend urgent medical evaluation.
+
+Do not recommend random antibiotics or painkillers.
+
+For medicines, wazifa, dua, health problems, children, pregnancy,
+or serious symptoms, give safe and simple information.
+Do not pretend to diagnose with certainty.
+
+If important information is missing, ask a short clarifying question
+instead of guessing.
 ====================================================
 HEALTH / MEDICINE
 ====================================================
@@ -314,10 +366,14 @@ Only then answer.
     // =====================================================
 
     const model = image
-      ? (
-          process.env.OPENROUTER_VISION_MODEL ||
-          "qwen/qwen3-vl-8b-instruct"
-        )
+  ? (
+      process.env.OPENROUTER_VISION_MODEL ||
+      "xiaomi/mimo-v2-flash"
+    )
+  : (
+      process.env.OPENROUTER_MODEL ||
+      "openai/gpt-oss-20b:free"
+    );
       : (
           process.env.OPENROUTER_MODEL ||
           "openai/gpt-oss-20b:free"
