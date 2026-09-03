@@ -339,7 +339,7 @@ NEVER CLAIM CERTAINTY WITHOUT EVIDENCE.
 
     const textModel =
       process.env.OPENROUTER_MODEL ||
-      "openai/gpt-oss-20b:free";
+      "openai/gpt-oss-20b"
 
     const visionModel =
       process.env.OPENROUTER_VISION_MODEL ||
