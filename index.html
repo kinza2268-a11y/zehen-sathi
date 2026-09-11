@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="theme-color"
+    content="#0d6efd"
+  >
+
+  <meta
+    name="description"
+    content="ZEHEN SATHI AI — Pi Network کے لیے ذہین AI اسسٹنٹ"
+  >
+
+  <title>ZEHEN SATHI AI</title>
+
+  <!-- Pi Network SDK -->
+  <script src="https://sdk.minepi.com/pi-sdk.js"></script>
+
+  <!-- Main CSS -->
+  <link
+    rel="stylesheet"
+    href="/Style.css"
+  >
+</head>
+
+
+<body>
+
+  <div
+    class="container"
+    dir="rtl"
+  >
+
+
+    <!-- =================================================
+         HEADER
+    ================================================== -->
+
+    <header class="app-header">
+
+      <div class="logo">
+        🤖
+      </div>
+
+      <div class="title-area">
+
+        <h1>
+          ZEHEN SATHI AI
+        </h1>
+
+        <p>
+          Pi Network کے لیے ذہین AI اسسٹنٹ
+        </p>
+
+      </div>
+
+    </header>
+
+
+    <!-- =================================================
+         WELCOME / PI LOGIN
+    ================================================== -->
+
+    <section class="welcome-card">
+
+      <h2>
+        👋 خوش آمدید!
+      </h2>
+
+      <p>
+        ZEHEN SATHI میں آپ اردو، Roman Urdu اور English
+        میں سوال پوچھ سکتے ہیں۔
+      </p>
+
+      <button
+        id="signin"
+        class="primary-btn"
+        type="button"
+      >
+        🟢 Pi سے Sign In کریں
+      </button>
+
+      <p
+        id="status"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+    </section>
+
+
+    <!-- =================================================
+         PI PAYMENT
+    ================================================== -->
+
+    <section class="payment-box">
+
+      <h3>
+        💰 Pi Testnet Payment
+      </h3>
+
+      <p>
+        App کو test کرنے کے لیے
+        <strong>0.01 Testnet Pi</strong>
+        ادا کریں۔
+      </p>
+
+      <button
+        id="payPi"
+        class="payment-btn"
+        type="button"
+      >
+        💰 0.01 Pi ادا کریں
+      </button>
+
+      <p
+        id="paymentStatus"
+        role="status"
+        aria-live="polite"
+      ></p>
+
+    </section>
+
+
+    <!-- =================================================
+         AI CHAT
+    ================================================== -->
+
+    <section class="chat-section">
+
+      <div class="chat-title">
+
+        <span>
+          💬
+        </span>
+
+        <h2>
+          AI Chat
+        </h2>
+
+      </div>
+
+
+      <p class="chat-subtitle">
+        اپنا سوال لکھیں، تصویر بھیجیں یا 🎤 سے آواز استعمال کریں۔
+      </p>
+
+
+      <!-- CHAT BOX -->
+
+      <div
+        id="chat"
+        class="chat-box"
+        aria-live="polite"
+      ></div>
+
+
+      <!-- =================================================
+           INPUT AREA
+      ================================================== -->
+
+      <div
+        class="input-area"
+        dir="ltr"
+      >
+
+        <!-- TEXT -->
+
+        <input
+          id="userInput"
+          type="text"
+          placeholder="اپنا سوال لکھیں..."
+          autocomplete="off"
+          aria-label="سوال"
+        >
+
+
+        <!-- VOICE -->
+
+        <button
+          id="voiceBtn"
+          type="button"
+          title="Voice input"
+          aria-label="Voice input"
+        >
+          🎤
+        </button>
+
+
+        <!-- IMAGE UPLOAD -->
+
+        <label
+          id="imageUploadBtn"
+          class="upload-btn"
+          for="imageInput"
+          title="تصویر اپلوڈ کریں"
+          aria-label="تصویر اپلوڈ کریں"
+        >
+          🖼️
+        </label>
+
+        <input
+          id="imageInput"
+          type="file"
+          accept="image/png,image/jpeg,image/jpg,image/webp"
+          hidden
+        >
+
+
+        <!-- SEND -->
+
+        <button
+          id="sendBtn"
+          type="button"
+          title="Send"
+          aria-label="Send message"
+        >
+          📤
+        </button>
+
+
+        <!-- CLEAR -->
+
+        <button
+          id="clearBtn"
+          type="button"
+          title="Clear chat"
+          aria-label="Clear chat"
+        >
+          🗑️
+        </button>
+
+      </div>
+
+    </section>
+
+
+    <!-- =================================================
+         FOOTER
+    ================================================== -->
+
+    <footer>
+
+      <p>
+        🤖 ZEHEN SATHI AI • Powered by Pi Network
+      </p>
+
+    </footer>
+
+
+  </div>
+
+
+  <!-- =================================================
+       PI AUTH
+  ================================================== -->
+
+  <script
+    type="module"
+    src="/Auth.js"
+  ></script>
+
+
+  <!-- =================================================
+       PI PAYMENT APPROVAL
+  ================================================== -->
+
+  <script
+    type="module"
+    src="/Approve.js"
+  ></script>
+
+
+  <!-- =================================================
+       PI PAYMENT COMPLETION
+  ================================================== -->
+
+  <script
+    type="module"
+    src="/Complete.js"
+  ></script>
+
+
+  <!-- =================================================
+       CHAT
+  ================================================== -->
+
+  <script
+    type="module"
+    src="/Chat.js"
+  ></script>
+
+
+  <!-- =================================================
+       MAIN SCRIPT
+  ================================================== -->
+
+  <script
+    type="module"
+    src="/Script.js"
+  ></script>
+
+
+</body>
+
+</html>
